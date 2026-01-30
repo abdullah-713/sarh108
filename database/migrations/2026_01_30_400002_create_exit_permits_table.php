@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('exit_permits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->foreignId('branch_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('department_id')->nullable()->constrained()->onDelete('set null');
@@ -50,7 +50,7 @@ return new class extends Migration
         // Exit permit settings per company
         Schema::create('exit_permit_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->unique()->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->unique()->nullable()->index();
             $table->boolean('require_approval')->default(true);
             $table->integer('max_permits_per_day')->default(1);
             $table->integer('max_permits_per_month')->default(5);

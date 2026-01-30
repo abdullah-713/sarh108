@@ -15,7 +15,7 @@ return new class extends Migration
         // PWA configurations per company
         Schema::create('pwa_configurations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->unique()->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->unique()->nullable()->index();
             $table->boolean('pwa_enabled')->default(true);
             $table->string('app_name')->default('صرح الإتقان');
             $table->string('app_short_name')->default('صرح');
@@ -39,7 +39,7 @@ return new class extends Migration
         // Push notification subscriptions
         Schema::create('push_subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('endpoint', 500)->unique();
             $table->string('public_key')->nullable();
@@ -58,7 +58,7 @@ return new class extends Migration
         // Notification queue
         Schema::create('notification_queue', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->foreignId('employee_id')->nullable()->constrained()->onDelete('cascade');
             $table->enum('channel', ['push', 'email', 'sms', 'in_app', 'all'])->default('push');
@@ -84,7 +84,7 @@ return new class extends Migration
         // Offline sync queue
         Schema::create('offline_sync_queue', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('employee_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('device_id');

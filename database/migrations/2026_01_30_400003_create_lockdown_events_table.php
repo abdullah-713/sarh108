@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('lockdown_events', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('branch_id')->nullable()->constrained()->onDelete('cascade'); // null = all branches
             $table->string('title');
             $table->string('title_ar')->nullable();

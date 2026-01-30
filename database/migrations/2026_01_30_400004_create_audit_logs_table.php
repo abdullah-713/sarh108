@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('attendance_audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Who made the change
             $table->foreignId('employee_id')->nullable()->constrained()->onDelete('set null'); // Affected employee
             $table->string('auditable_type'); // Model class
@@ -55,7 +55,7 @@ return new class extends Migration
         // Audit summary for quick stats
         Schema::create('audit_summaries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('company_id')->nullable()->index();
             $table->date('summary_date');
             $table->integer('total_actions')->default(0);
             $table->integer('create_actions')->default(0);
