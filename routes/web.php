@@ -709,6 +709,192 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
             Route::get('hr/deduction-tiers/calculate', [\App\Http\Controllers\DeductionTierController::class, 'calculate'])->name('hr.deduction-tiers.calculate');
         });
 
+        // =====================================================
+        // Phase 2: Competition & Gamification Routes
+        // =====================================================
+
+        // Branch Ranking Routes
+        Route::get('reports/branch-ranking', [\App\Http\Controllers\BranchRankingController::class, 'index'])->name('reports.branch-ranking.index');
+        Route::get('api/branch-ranking', [\App\Http\Controllers\BranchRankingController::class, 'getRankings'])->name('api.branch-ranking.index');
+        Route::get('api/branch-ranking/{branchId}/stats', [\App\Http\Controllers\BranchRankingController::class, 'getBranchStats'])->name('api.branch-ranking.stats');
+        Route::get('api/branch-ranking/top', [\App\Http\Controllers\BranchRankingController::class, 'getTopBranches'])->name('api.branch-ranking.top');
+        Route::post('reports/branch-ranking/recalculate', [\App\Http\Controllers\BranchRankingController::class, 'recalculate'])->name('reports.branch-ranking.recalculate');
+
+        // Badge Management Routes
+        Route::middleware('permission:manage-employees')->group(function () {
+            Route::get('hr/badges', [\App\Http\Controllers\BadgeController::class, 'index'])->name('hr.badges.index');
+            Route::post('hr/badges', [\App\Http\Controllers\BadgeController::class, 'store'])->name('hr.badges.store');
+            Route::put('hr/badges/{badge}', [\App\Http\Controllers\BadgeController::class, 'update'])->name('hr.badges.update');
+            Route::delete('hr/badges/{badge}', [\App\Http\Controllers\BadgeController::class, 'destroy'])->name('hr.badges.destroy');
+            Route::post('hr/badges/award', [\App\Http\Controllers\BadgeController::class, 'awardToEmployee'])->name('hr.badges.award');
+            Route::post('hr/badges/create-defaults', [\App\Http\Controllers\BadgeController::class, 'createDefaults'])->name('hr.badges.create-defaults');
+        });
+        Route::get('api/badges/employee/{employeeId}', [\App\Http\Controllers\BadgeController::class, 'getEmployeeBadges'])->name('api.badges.employee');
+        Route::get('api/badges/leaderboard', [\App\Http\Controllers\BadgeController::class, 'leaderboard'])->name('api.badges.leaderboard');
+
+        // MVP & Leaderboard Routes
+        Route::get('hr/mvp', [\App\Http\Controllers\MVPController::class, 'index'])->name('hr.mvp.index');
+        Route::get('api/mvp/top-ten', [\App\Http\Controllers\MVPController::class, 'getTopTen'])->name('api.mvp.top-ten');
+        Route::get('api/mvp/employee/{employeeId}', [\App\Http\Controllers\MVPController::class, 'getEmployeePerformance'])->name('api.mvp.employee');
+        Route::get('api/mvp/streaks', [\App\Http\Controllers\MVPController::class, 'getTopStreaks'])->name('api.mvp.streaks');
+        Route::get('api/mvp/records', [\App\Http\Controllers\MVPController::class, 'getRecordBreakers'])->name('api.mvp.records');
+        Route::post('hr/mvp/select-monthly', [\App\Http\Controllers\MVPController::class, 'selectMonthlyMVP'])->name('hr.mvp.select-monthly');
+
+        // News Ticker Routes
+        Route::middleware('permission:manage-branches')->group(function () {
+            Route::get('settings/news-ticker', [\App\Http\Controllers\NewsTickerController::class, 'index'])->name('settings.news-ticker.index');
+            Route::post('settings/news-ticker', [\App\Http\Controllers\NewsTickerController::class, 'store'])->name('settings.news-ticker.store');
+            Route::put('settings/news-ticker/{newsTicker}', [\App\Http\Controllers\NewsTickerController::class, 'update'])->name('settings.news-ticker.update');
+            Route::delete('settings/news-ticker/{newsTicker}', [\App\Http\Controllers\NewsTickerController::class, 'destroy'])->name('settings.news-ticker.destroy');
+        });
+        Route::get('api/news-ticker/active', [\App\Http\Controllers\NewsTickerController::class, 'getActive'])->name('api.news-ticker.active');
+        Route::post('api/news-ticker/{id}/view', [\App\Http\Controllers\NewsTickerController::class, 'trackView'])->name('api.news-ticker.view');
+        Route::post('api/news-ticker/{id}/click', [\App\Http\Controllers\NewsTickerController::class, 'trackClick'])->name('api.news-ticker.click');
+
+        // =====================================================
+        // Phase 3 Routes: AI Features
+        // =====================================================
+        
+        // Risk Predictions Routes
+        Route::middleware('permission:view-hr-reports')->group(function () {
+            Route::get('ai/risk-predictions', [\App\Http\Controllers\RiskPredictionController::class, 'index'])->name('ai.risk-predictions.index');
+            Route::post('ai/risk-predictions/run', [\App\Http\Controllers\RiskPredictionController::class, 'runAnalysis'])->name('ai.risk-predictions.run');
+            Route::put('ai/risk-predictions/{prediction}/status', [\App\Http\Controllers\RiskPredictionController::class, 'updateStatus'])->name('ai.risk-predictions.update-status');
+            Route::post('ai/risk-predictions/{prediction}/outcome', [\App\Http\Controllers\RiskPredictionController::class, 'recordOutcome'])->name('ai.risk-predictions.record-outcome');
+            Route::get('ai/risk-predictions/dashboard', [\App\Http\Controllers\RiskPredictionController::class, 'dashboard'])->name('ai.risk-predictions.dashboard');
+        });
+        
+        // API Risk Predictions Routes
+        Route::get('api/risk-predictions', [\App\Http\Controllers\RiskPredictionController::class, 'getPredictions'])->name('api.risk-predictions.index');
+        Route::get('api/risk-predictions/stats', [\App\Http\Controllers\RiskPredictionController::class, 'getStats'])->name('api.risk-predictions.stats');
+        
+        // Security Routes (Liveness & Tamper Detection)
+        Route::middleware('permission:view-hr-reports')->group(function () {
+            Route::get('ai/security', [\App\Http\Controllers\SecurityController::class, 'index'])->name('ai.security.index');
+            Route::get('ai/security/liveness-logs', [\App\Http\Controllers\SecurityController::class, 'livenessLogs'])->name('ai.security.liveness-logs');
+            Route::get('ai/security/tamper-logs', [\App\Http\Controllers\SecurityController::class, 'tamperLogs'])->name('ai.security.tamper-logs');
+            Route::put('ai/security/tamper/{tamperLog}/review', [\App\Http\Controllers\SecurityController::class, 'reviewTamper'])->name('ai.security.review-tamper');
+        });
+        
+        // API Security Routes
+        Route::post('api/security/liveness-check', [\App\Http\Controllers\SecurityController::class, 'performLivenessCheck'])->name('api.security.liveness-check');
+        Route::get('api/security/liveness-stats', [\App\Http\Controllers\SecurityController::class, 'getLivenessStats'])->name('api.security.liveness-stats');
+        Route::get('api/security/tamper-stats', [\App\Http\Controllers\SecurityController::class, 'getTamperStats'])->name('api.security.tamper-stats');
+        
+        // Sentiment Analysis Routes
+        Route::middleware('permission:view-hr-reports')->group(function () {
+            Route::get('ai/sentiment', [\App\Http\Controllers\SentimentAnalysisController::class, 'index'])->name('ai.sentiment.index');
+            Route::post('ai/sentiment/run', [\App\Http\Controllers\SentimentAnalysisController::class, 'runAnalysis'])->name('ai.sentiment.run');
+            Route::get('ai/sentiment/employee/{employee}', [\App\Http\Controllers\SentimentAnalysisController::class, 'analyzeEmployee'])->name('ai.sentiment.employee');
+            Route::post('ai/sentiment/{analysis}/followup', [\App\Http\Controllers\SentimentAnalysisController::class, 'assignFollowup'])->name('ai.sentiment.assign-followup');
+            Route::put('ai/sentiment/{analysis}/followup-status', [\App\Http\Controllers\SentimentAnalysisController::class, 'updateFollowupStatus'])->name('ai.sentiment.update-followup');
+        });
+        
+        // API Sentiment Routes
+        Route::get('api/sentiment/summary', [\App\Http\Controllers\SentimentAnalysisController::class, 'getSummary'])->name('api.sentiment.summary');
+        Route::get('api/sentiment/trend', [\App\Http\Controllers\SentimentAnalysisController::class, 'getTrend'])->name('api.sentiment.trend');
+        Route::get('api/sentiment/by-branch', [\App\Http\Controllers\SentimentAnalysisController::class, 'getByBranch'])->name('api.sentiment.by-branch');
+        Route::get('api/sentiment/by-department', [\App\Http\Controllers\SentimentAnalysisController::class, 'getByDepartment'])->name('api.sentiment.by-department');
+
+        // =====================================================
+        // Phase 4 Routes: Advanced Features
+        // =====================================================
+        
+        // Work Zones Routes
+        Route::middleware('permission:manage-branches')->group(function () {
+            Route::get('settings/work-zones', [\App\Http\Controllers\WorkZoneController::class, 'index'])->name('settings.work-zones.index');
+            Route::post('settings/work-zones', [\App\Http\Controllers\WorkZoneController::class, 'store'])->name('settings.work-zones.store');
+            Route::get('settings/work-zones/{zone}', [\App\Http\Controllers\WorkZoneController::class, 'show'])->name('settings.work-zones.show');
+            Route::put('settings/work-zones/{zone}', [\App\Http\Controllers\WorkZoneController::class, 'update'])->name('settings.work-zones.update');
+            Route::delete('settings/work-zones/{zone}', [\App\Http\Controllers\WorkZoneController::class, 'destroy'])->name('settings.work-zones.destroy');
+            Route::put('settings/work-zones/{zone}/toggle-status', [\App\Http\Controllers\WorkZoneController::class, 'toggleStatus'])->name('settings.work-zones.toggle-status');
+            Route::post('settings/work-zones/{zone}/employees', [\App\Http\Controllers\WorkZoneController::class, 'addEmployee'])->name('settings.work-zones.add-employee');
+            Route::delete('settings/work-zones/{zone}/employees/{employee}', [\App\Http\Controllers\WorkZoneController::class, 'removeEmployee'])->name('settings.work-zones.remove-employee');
+        });
+        
+        // Zone Access Logs Routes
+        Route::middleware('permission:view-hr-reports')->group(function () {
+            Route::get('reports/zone-access-logs', [\App\Http\Controllers\WorkZoneController::class, 'accessLogs'])->name('reports.zone-access-logs');
+            Route::get('reports/zone-unauthorized', [\App\Http\Controllers\WorkZoneController::class, 'unauthorizedAttempts'])->name('reports.zone-unauthorized');
+        });
+        
+        // API Zone Routes
+        Route::post('api/zones/check-access', [\App\Http\Controllers\WorkZoneController::class, 'checkAccess'])->name('api.zones.check-access');
+        Route::post('api/zones/log-entry', [\App\Http\Controllers\WorkZoneController::class, 'logEntry'])->name('api.zones.log-entry');
+        Route::post('api/zones/log-exit', [\App\Http\Controllers\WorkZoneController::class, 'logExit'])->name('api.zones.log-exit');
+        
+        // Exit Permits Routes
+        Route::middleware('permission:manage-leaves')->group(function () {
+            Route::get('hr/exit-permits', [\App\Http\Controllers\ExitPermitController::class, 'index'])->name('hr.exit-permits.index');
+            Route::get('hr/exit-permits/create', [\App\Http\Controllers\ExitPermitController::class, 'create'])->name('hr.exit-permits.create');
+            Route::post('hr/exit-permits', [\App\Http\Controllers\ExitPermitController::class, 'store'])->name('hr.exit-permits.store');
+            Route::get('hr/exit-permits/{permit}', [\App\Http\Controllers\ExitPermitController::class, 'show'])->name('hr.exit-permits.show');
+            Route::put('hr/exit-permits/{permit}', [\App\Http\Controllers\ExitPermitController::class, 'update'])->name('hr.exit-permits.update');
+            Route::delete('hr/exit-permits/{permit}', [\App\Http\Controllers\ExitPermitController::class, 'destroy'])->name('hr.exit-permits.destroy');
+            Route::post('hr/exit-permits/{permit}/approve', [\App\Http\Controllers\ExitPermitController::class, 'approve'])->name('hr.exit-permits.approve');
+            Route::post('hr/exit-permits/{permit}/reject', [\App\Http\Controllers\ExitPermitController::class, 'reject'])->name('hr.exit-permits.reject');
+            Route::post('hr/exit-permits/{permit}/cancel', [\App\Http\Controllers\ExitPermitController::class, 'cancel'])->name('hr.exit-permits.cancel');
+            Route::post('hr/exit-permits/{permit}/record-return', [\App\Http\Controllers\ExitPermitController::class, 'recordReturn'])->name('hr.exit-permits.record-return');
+            Route::post('hr/exit-permits/{permit}/extend', [\App\Http\Controllers\ExitPermitController::class, 'extend'])->name('hr.exit-permits.extend');
+        });
+        
+        // Exit Permit Settings Routes
+        Route::middleware('permission:manage-settings')->group(function () {
+            Route::get('settings/exit-permits', [\App\Http\Controllers\ExitPermitController::class, 'settings'])->name('settings.exit-permits.index');
+            Route::put('settings/exit-permits', [\App\Http\Controllers\ExitPermitController::class, 'updateSettings'])->name('settings.exit-permits.update');
+        });
+        
+        // API Exit Permit Routes
+        Route::get('api/exit-permits/verify/{qrCode}', [\App\Http\Controllers\ExitPermitController::class, 'verifyQR'])->name('api.exit-permits.verify');
+        Route::get('api/exit-permits/my-permits', [\App\Http\Controllers\ExitPermitController::class, 'myPermits'])->name('api.exit-permits.my-permits');
+        Route::get('api/exit-permits/pending-count', [\App\Http\Controllers\ExitPermitController::class, 'pendingCount'])->name('api.exit-permits.pending-count');
+        
+        // Lockdown Routes
+        Route::middleware('permission:manage-settings')->group(function () {
+            Route::get('security/lockdown', [\App\Http\Controllers\LockdownController::class, 'index'])->name('security.lockdown.index');
+            Route::post('security/lockdown', [\App\Http\Controllers\LockdownController::class, 'store'])->name('security.lockdown.store');
+            Route::get('security/lockdown/{lockdown}', [\App\Http\Controllers\LockdownController::class, 'show'])->name('security.lockdown.show');
+            Route::put('security/lockdown/{lockdown}', [\App\Http\Controllers\LockdownController::class, 'update'])->name('security.lockdown.update');
+            Route::put('security/lockdown/{lockdown}/end', [\App\Http\Controllers\LockdownController::class, 'end'])->name('security.lockdown.end');
+            Route::post('security/lockdown/{lockdown}/add-exempt', [\App\Http\Controllers\LockdownController::class, 'addExempt'])->name('security.lockdown.add-exempt');
+            Route::delete('security/lockdown/{lockdown}/remove-exempt/{employee}', [\App\Http\Controllers\LockdownController::class, 'removeExempt'])->name('security.lockdown.remove-exempt');
+            Route::post('security/lockdown/{lockdown}/emergency-override', [\App\Http\Controllers\LockdownController::class, 'emergencyOverride'])->name('security.lockdown.emergency-override');
+        });
+        
+        // API Lockdown Routes
+        Route::get('api/lockdown/status', [\App\Http\Controllers\LockdownController::class, 'checkStatus'])->name('api.lockdown.status');
+        Route::get('api/lockdown/can-checkin', [\App\Http\Controllers\LockdownController::class, 'canCheckin'])->name('api.lockdown.can-checkin');
+        
+        // Audit Logs Routes
+        Route::middleware('permission:view-hr-reports')->group(function () {
+            Route::get('security/audit-logs', [\App\Http\Controllers\AuditLogController::class, 'index'])->name('security.audit-logs.index');
+            Route::get('security/audit-logs/dashboard', [\App\Http\Controllers\AuditLogController::class, 'dashboard'])->name('security.audit-logs.dashboard');
+            Route::get('security/audit-logs/export', [\App\Http\Controllers\AuditLogController::class, 'export'])->name('security.audit-logs.export');
+            Route::get('security/audit-logs/{log}', [\App\Http\Controllers\AuditLogController::class, 'show'])->name('security.audit-logs.show');
+            Route::put('security/audit-logs/{log}/reviewed', [\App\Http\Controllers\AuditLogController::class, 'markReviewed'])->name('security.audit-logs.mark-reviewed');
+        });
+        
+        // API Audit Logs Routes
+        Route::get('api/audit-logs/recent', [\App\Http\Controllers\AuditLogController::class, 'getRecent'])->name('api.audit-logs.recent');
+        Route::get('api/audit-logs/stats', [\App\Http\Controllers\AuditLogController::class, 'getStats'])->name('api.audit-logs.stats');
+        
+        // PWA Routes
+        Route::middleware('permission:manage-settings')->group(function () {
+            Route::get('settings/pwa', [\App\Http\Controllers\PwaController::class, 'index'])->name('settings.pwa.index');
+            Route::put('settings/pwa', [\App\Http\Controllers\PwaController::class, 'update'])->name('settings.pwa.update');
+            Route::post('settings/pwa/send-notification', [\App\Http\Controllers\PwaController::class, 'sendNotification'])->name('settings.pwa.send-notification');
+            Route::get('settings/pwa/subscriptions', [\App\Http\Controllers\PwaController::class, 'subscriptions'])->name('settings.pwa.subscriptions');
+            Route::get('settings/pwa/offline-queue', [\App\Http\Controllers\PwaController::class, 'offlineQueue'])->name('settings.pwa.offline-queue');
+            Route::post('settings/pwa/process-offline-queue', [\App\Http\Controllers\PwaController::class, 'processOfflineQueue'])->name('settings.pwa.process-offline-queue');
+        });
+        
+        // API PWA Routes (public within authenticated)
+        Route::get('api/pwa/manifest', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('api.pwa.manifest');
+        Route::post('api/pwa/subscribe', [\App\Http\Controllers\PwaController::class, 'subscribe'])->name('api.pwa.subscribe');
+        Route::post('api/pwa/unsubscribe', [\App\Http\Controllers\PwaController::class, 'unsubscribe'])->name('api.pwa.unsubscribe');
+        Route::post('api/pwa/sync-offline', [\App\Http\Controllers\PwaController::class, 'syncOffline'])->name('api.pwa.sync-offline');
+        Route::get('api/pwa/offline-data', [\App\Http\Controllers\PwaController::class, 'offlineData'])->name('api.pwa.offline-data');
+
         // Impersonation routes
         Route::middleware('App\Http\Middleware\SuperAdminMiddleware')->group(function () {
             Route::get('impersonate/{userId}', [ImpersonateController::class, 'start'])->name('impersonate.start');
