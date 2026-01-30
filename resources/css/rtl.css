@@ -1,0 +1,255 @@
+/* ===================================
+   RTL & SIDEBAR COMPREHENSIVE FIX
+   =================================== */
+
+/* Root RTL Direction */
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Sidebar Wrapper RTL */
+html[dir="rtl"] [data-slot="sidebar-wrapper"],
+html[dir="rtl"] [data-slot="sidebar"],
+html[dir="rtl"] [data-sidebar] {
+  direction: rtl;
+}
+
+html[dir="ltr"] [data-slot="sidebar-wrapper"],
+html[dir="ltr"] [data-slot="sidebar"],
+html[dir="ltr"] [data-sidebar] {
+  direction: ltr;
+}
+
+/* ===================================
+   SIDEBAR POSITIONING FOR RTL
+   =================================== */
+
+/* RTL Left Side Sidebar */
+html[dir="rtl"] [data-side="left"] {
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* RTL Right Side Sidebar */
+html[dir="rtl"] [data-side="right"] {
+  left: 0 !important;
+  right: auto !important;
+}
+
+/* LTR Positioning (ensure consistency) */
+html[dir="ltr"] [data-side="left"] {
+  left: 0 !important;
+  right: auto !important;
+}
+
+html[dir="ltr"] [data-side="right"] {
+  right: 0 !important;
+  left: auto !important;
+}
+
+/* ===================================
+   SIDEBAR BORDER FOR RTL
+   =================================== */
+
+html[dir="rtl"] [data-side="left"] {
+  border-left: none !important;
+  border-right: 1px solid var(--sidebar-border);
+}
+
+html[dir="rtl"] [data-side="right"] {
+  border-right: none !important;
+  border-left: 1px solid var(--sidebar-border);
+}
+
+html[dir="ltr"] [data-side="left"] {
+  border-left: 1px solid var(--sidebar-border);
+  border-right: none !important;
+}
+
+html[dir="ltr"] [data-side="right"] {
+  border-right: 1px solid var(--sidebar-border);
+  border-left: none !important;
+}
+
+/* ===================================
+   SIDEBAR COLLAPSE & OFFCANVAS RTL
+   =================================== */
+
+html[dir="rtl"] [data-collapsible="offcanvas"][data-side="left"] {
+  right: calc(var(--sidebar-width) * -1) !important;
+  left: auto !important;
+  animation: slideInRight 0.3s ease-in-out;
+}
+
+html[dir="rtl"] [data-collapsible="offcanvas"][data-side="left"].open {
+  right: 0 !important;
+}
+
+html[dir="rtl"] [data-collapsible="offcanvas"][data-side="right"] {
+  left: calc(var(--sidebar-width) * -1) !important;
+  right: auto !important;
+  animation: slideInLeft 0.3s ease-in-out;
+}
+
+html[dir="rtl"] [data-collapsible="offcanvas"][data-side="right"].open {
+  left: 0 !important;
+}
+
+html[dir="ltr"] [data-collapsible="offcanvas"][data-side="left"] {
+  left: calc(var(--sidebar-width) * -1) !important;
+  right: auto !important;
+  animation: slideInLeft 0.3s ease-in-out;
+}
+
+html[dir="ltr"] [data-collapsible="offcanvas"][data-side="left"].open {
+  left: 0 !important;
+}
+
+html[dir="ltr"] [data-collapsible="offcanvas"][data-side="right"] {
+  right: calc(var(--sidebar-width) * -1) !important;
+  left: auto !important;
+  animation: slideInRight 0.3s ease-in-out;
+}
+
+html[dir="ltr"] [data-collapsible="offcanvas"][data-side="right"].open {
+  right: 0 !important;
+}
+
+/* ===================================
+   SIDEBAR RAIL RTL
+   =================================== */
+
+html[dir="rtl"] [data-sidebar="rail"] {
+  transform: none !important;
+}
+
+html[dir="ltr"] [data-sidebar="rail"] {
+  transform: none !important;
+}
+
+/* ===================================
+   SIDEBAR MENU ITEMS RTL
+   =================================== */
+
+html[dir="rtl"] [data-sidebar="menu-button"],
+html[dir="rtl"] [data-sidebar="trigger"] {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+html[dir="ltr"] [data-sidebar="menu-button"],
+html[dir="ltr"] [data-sidebar="trigger"] {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+/* RTL Action Buttons */
+html[dir="rtl"] [data-sidebar="menu-action"],
+html[dir="rtl"] [data-sidebar="group-action"],
+html[dir="rtl"] [data-sidebar="menu-badge"] {
+  right: auto !important;
+  left: 1rem !important;
+}
+
+html[dir="ltr"] [data-sidebar="menu-action"],
+html[dir="ltr"] [data-sidebar="group-action"],
+html[dir="ltr"] [data-sidebar="menu-badge"] {
+  right: 1rem !important;
+  left: auto !important;
+}
+
+/* ===================================
+   SIDEBAR SUBMENU RTL
+   =================================== */
+
+html[dir="rtl"] [data-sidebar="menu-sub"] {
+  border-left: none !important;
+  border-right: 1px solid var(--sidebar-border) !important;
+  margin-left: 0 !important;
+  margin-right: 0.875rem !important;
+  padding-left: 0 !important;
+  padding-right: 0.625rem !important;
+}
+
+html[dir="ltr"] [data-sidebar="menu-sub"] {
+  border-left: 1px solid var(--sidebar-border) !important;
+  border-right: none !important;
+  margin-right: 0 !important;
+  margin-left: 0.875rem !important;
+  padding-right: 0 !important;
+  padding-left: 0.625rem !important;
+}
+
+/* ===================================
+   MOBILE AUTO-HIDE FUNCTIONALITY
+   =================================== */
+
+/* Close sidebar automatically on mobile when navigating */
+@media (max-width: 1024px) {
+  /* Sidebar should be closed by default on mobile */
+  [data-sidebar] {
+    --sidebar-width: 0;
+  }
+  
+  /* Auto-hide on link click */
+  [data-sidebar] a {
+    position: relative;
+  }
+}
+
+/* Smooth transition animations */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Sidebar smooth transitions */
+[data-sidebar],
+[data-collapsible="offcanvas"] {
+  transition: all 0.3s ease-in-out;
+}
+
+/* ===================================
+   OVERLAY & SIDEBAR CONTAINER RTL
+   =================================== */
+
+html[dir="rtl"] .sidebar-overlay {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Ensure proper flex direction for RTL */
+html[dir="rtl"] [data-sidebar-wrapper] {
+  flex-direction: row-reverse;
+}
