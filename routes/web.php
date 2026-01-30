@@ -663,6 +663,52 @@ Route::middleware(['auth', 'verified', 'setting'])->group(function () {
             Route::get('calendar', [\App\Http\Controllers\CalendarController::class, 'index'])->name('calendar.index');
         });
 
+        // =============================================
+        // Attendance Module Routes (Phase 1)
+        // =============================================
+
+        // Quick Checkin Routes (Employee)
+        Route::get('attendance/quick-checkin', [\App\Http\Controllers\QuickCheckinController::class, 'index'])->name('attendance.quick-checkin.index');
+        Route::post('attendance/quick-checkin', [\App\Http\Controllers\QuickCheckinController::class, 'store'])->name('attendance.quick-checkin.store');
+        Route::get('attendance/quick-checkin/live-status', [\App\Http\Controllers\QuickCheckinController::class, 'liveStatus'])->name('attendance.quick-checkin.live-status');
+
+        // Bulk Checkin Routes (Supervisor)
+        Route::middleware('permission:manage-employees')->group(function () {
+            Route::get('attendance/bulk-checkin', [\App\Http\Controllers\BulkCheckinController::class, 'index'])->name('attendance.bulk-checkin.index');
+            Route::post('attendance/bulk-checkin', [\App\Http\Controllers\BulkCheckinController::class, 'store'])->name('attendance.bulk-checkin.store');
+            Route::get('attendance/bulk-checkin/logs', [\App\Http\Controllers\BulkCheckinController::class, 'logs'])->name('attendance.bulk-checkin.logs');
+        });
+
+        // Live Status Routes
+        Route::get('attendance/live-status', [\App\Http\Controllers\QuickCheckinController::class, 'liveStatus'])->name('attendance.live-status');
+
+        // Wi-Fi Networks Management Routes
+        Route::middleware('permission:manage-branches')->group(function () {
+            Route::get('hr/wifi-networks', [\App\Http\Controllers\WifiNetworkController::class, 'index'])->name('hr.wifi-networks.index');
+            Route::post('hr/wifi-networks', [\App\Http\Controllers\WifiNetworkController::class, 'store'])->name('hr.wifi-networks.store');
+            Route::put('hr/wifi-networks/{wifiNetwork}', [\App\Http\Controllers\WifiNetworkController::class, 'update'])->name('hr.wifi-networks.update');
+            Route::delete('hr/wifi-networks/{wifiNetwork}', [\App\Http\Controllers\WifiNetworkController::class, 'destroy'])->name('hr.wifi-networks.destroy');
+            Route::post('hr/wifi-networks/verify', [\App\Http\Controllers\WifiNetworkController::class, 'verify'])->name('hr.wifi-networks.verify');
+        });
+
+        // Time Windows Management Routes
+        Route::middleware('permission:manage-branches')->group(function () {
+            Route::get('hr/time-windows', [\App\Http\Controllers\TimeWindowController::class, 'index'])->name('hr.time-windows.index');
+            Route::post('hr/time-windows', [\App\Http\Controllers\TimeWindowController::class, 'store'])->name('hr.time-windows.store');
+            Route::put('hr/time-windows/{timeWindow}', [\App\Http\Controllers\TimeWindowController::class, 'update'])->name('hr.time-windows.update');
+            Route::delete('hr/time-windows/{timeWindow}', [\App\Http\Controllers\TimeWindowController::class, 'destroy'])->name('hr.time-windows.destroy');
+            Route::get('hr/time-windows/current', [\App\Http\Controllers\TimeWindowController::class, 'getCurrentWindow'])->name('hr.time-windows.current');
+        });
+
+        // Deduction Tiers Management Routes
+        Route::middleware('permission:manage-branches')->group(function () {
+            Route::get('hr/deduction-tiers', [\App\Http\Controllers\DeductionTierController::class, 'index'])->name('hr.deduction-tiers.index');
+            Route::post('hr/deduction-tiers', [\App\Http\Controllers\DeductionTierController::class, 'store'])->name('hr.deduction-tiers.store');
+            Route::put('hr/deduction-tiers/{deductionTier}', [\App\Http\Controllers\DeductionTierController::class, 'update'])->name('hr.deduction-tiers.update');
+            Route::delete('hr/deduction-tiers/{deductionTier}', [\App\Http\Controllers\DeductionTierController::class, 'destroy'])->name('hr.deduction-tiers.destroy');
+            Route::get('hr/deduction-tiers/calculate', [\App\Http\Controllers\DeductionTierController::class, 'calculate'])->name('hr.deduction-tiers.calculate');
+        });
+
         // Impersonation routes
         Route::middleware('App\Http\Middleware\SuperAdminMiddleware')->group(function () {
             Route::get('impersonate/{userId}', [ImpersonateController::class, 'start'])->name('impersonate.start');
