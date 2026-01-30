@@ -7,7 +7,7 @@ import { useSidebarSettings } from '@/contexts/SidebarContext';
 import { useBrand } from '@/contexts/BrandContext';
 import { type NavItem } from '@/types';
 import { Link, usePage, router } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ShoppingBag, Users, Tag, FileIcon, Settings, BarChart, Barcode, FileText, Briefcase, CheckSquare, Calendar, CreditCard, Ticket, Gift, DollarSign, MessageSquare, CalendarDays, Palette, Image, Mail, Mail as VCard, ChevronDown, Building2, Globe, Clock, Timer, Coins } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, ShoppingBag, Users, Tag, FileIcon, Settings, BarChart, Barcode, FileText, Briefcase, CheckSquare, Calendar, CreditCard, Ticket, Gift, DollarSign, MessageSquare, CalendarDays, Palette, Image, Mail, Mail as VCard, ChevronDown, Building2, Globe, Clock, Timer, Coins, MapPin, DoorOpen, Lock, Shield, Brain, Trophy, Wifi, Smartphone, TrendingUp } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import AppLogo from './app-logo';
@@ -470,6 +470,179 @@ export function AppSidebar() {
                 title: t('Attendance Management'),
                 icon: Clock,
                 children: attendanceChildren
+            });
+        }
+
+        // =====================================================
+        // Phase 1: Quick Attendance Features
+        // =====================================================
+        const quickAttendanceChildren = [];
+        
+        if (hasPermission(permissions, 'manage-attendance-records')) {
+            quickAttendanceChildren.push({
+                title: t('Quick Check-in'),
+                href: '/attendance/quick-checkin'
+            });
+            quickAttendanceChildren.push({
+                title: t('Bulk Check-in'),
+                href: '/attendance/bulk-checkin'
+            });
+            quickAttendanceChildren.push({
+                title: t('Live Status'),
+                href: '/attendance/live-status'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-branches')) {
+            quickAttendanceChildren.push({
+                title: t('WiFi Networks'),
+                href: '/hr/wifi-networks'
+            });
+            quickAttendanceChildren.push({
+                title: t('Time Windows'),
+                href: '/hr/time-windows'
+            });
+            quickAttendanceChildren.push({
+                title: t('Deduction Tiers'),
+                href: '/hr/deduction-tiers'
+            });
+        }
+        
+        if (quickAttendanceChildren.length > 0) {
+            items.push({
+                title: t('Quick Attendance'),
+                icon: Wifi,
+                children: quickAttendanceChildren
+            });
+        }
+
+        // =====================================================
+        // Phase 2: Competition & Gamification
+        // =====================================================
+        const gamificationChildren = [];
+        
+        if (hasPermission(permissions, 'view-hr-reports')) {
+            gamificationChildren.push({
+                title: t('Branch Ranking'),
+                href: '/reports/branch-ranking'
+            });
+            gamificationChildren.push({
+                title: t('MVP Leaderboard'),
+                href: '/hr/mvp-leaderboard'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-employees')) {
+            gamificationChildren.push({
+                title: t('Badges'),
+                href: '/hr/badges'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-settings')) {
+            gamificationChildren.push({
+                title: t('News Ticker'),
+                href: '/settings/news-ticker'
+            });
+        }
+        
+        if (gamificationChildren.length > 0) {
+            items.push({
+                title: t('Gamification'),
+                icon: Trophy,
+                children: gamificationChildren
+            });
+        }
+
+        // =====================================================
+        // Phase 3: AI Features
+        // =====================================================
+        const aiChildren = [];
+        
+        if (hasPermission(permissions, 'view-hr-reports')) {
+            aiChildren.push({
+                title: t('Risk Predictions'),
+                href: '/ai/risk-predictions'
+            });
+            aiChildren.push({
+                title: t('Security Dashboard'),
+                href: '/ai/security'
+            });
+            aiChildren.push({
+                title: t('Liveness Logs'),
+                href: '/ai/security/liveness-logs'
+            });
+            aiChildren.push({
+                title: t('Tamper Logs'),
+                href: '/ai/security/tamper-logs'
+            });
+            aiChildren.push({
+                title: t('Sentiment Analysis'),
+                href: '/ai/sentiment'
+            });
+        }
+        
+        if (aiChildren.length > 0) {
+            items.push({
+                title: t('AI Features'),
+                icon: Brain,
+                children: aiChildren
+            });
+        }
+
+        // =====================================================
+        // Phase 4: Advanced Security
+        // =====================================================
+        const securityChildren = [];
+        
+        if (hasPermission(permissions, 'manage-settings')) {
+            securityChildren.push({
+                title: t('Lockdown Mode'),
+                href: '/security/lockdown'
+            });
+        }
+        
+        if (hasPermission(permissions, 'view-hr-reports')) {
+            securityChildren.push({
+                title: t('Audit Logs'),
+                href: '/security/audit-logs'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-branches')) {
+            securityChildren.push({
+                title: t('Work Zones'),
+                href: '/settings/work-zones'
+            });
+            securityChildren.push({
+                title: t('Zone Access Logs'),
+                href: '/reports/zone-access-logs'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-leaves')) {
+            securityChildren.push({
+                title: t('Exit Permits'),
+                href: '/hr/exit-permits'
+            });
+        }
+        
+        if (hasPermission(permissions, 'manage-settings')) {
+            securityChildren.push({
+                title: t('Exit Permit Settings'),
+                href: '/settings/exit-permits'
+            });
+            securityChildren.push({
+                title: t('PWA Settings'),
+                href: '/settings/pwa'
+            });
+        }
+        
+        if (securityChildren.length > 0) {
+            items.push({
+                title: t('Security & Advanced'),
+                icon: Shield,
+                children: securityChildren
             });
         }
 
